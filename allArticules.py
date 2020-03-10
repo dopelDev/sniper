@@ -1,6 +1,7 @@
 from requests import get
 from bs4 import BeautifulSoup
 from pprint import pprint
+
 urlSeed = 'http://www.elfrancotirador.com/'
 
 def getArticles(urlSeed):
@@ -43,8 +44,33 @@ def getArticles(urlSeed):
         numPage += 1
 
 
+def getContent(url):
+
+    #url = 'http://www.elfrancotirador.com/las-guerras-del-fin-del-mundo/'
+
+    html = get(url)
+    sopa = BeautifulSoup(html.text, 'html.parser')
+
+    chunks = sopa.find_all('p', style=True)
+
+    for chunk in chunks:
+        content = chunk.get_text()
+
+        if 'Compartir en Facebook' in content:
+            continue
+        else:
+            print(content)
+
+
 #here begins
 
-list = getArticles(urlSeed)
+listOfArticles = getArticles(urlSeed)
 
-pprint(list)
+for article in range(len(listOfArticles)):
+    print('index : ' + str(article))
+    print(listOfArticles[article])
+    print('\n\n')
+
+index = int(input())
+
+getContent(listOfArticles[index]['link'])    
