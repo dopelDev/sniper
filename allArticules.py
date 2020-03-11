@@ -1,6 +1,8 @@
 from requests import get
 from bs4 import BeautifulSoup
-from pprint import pprint
+from os import mkdir
+from os.path import exists
+from gtts import gTTS
 
 urlSeed = 'http://www.elfrancotirador.com/'
 
@@ -46,10 +48,9 @@ def getArticles(urlSeed):
 
 def getContent(url):
 
-    #url = 'http://www.elfrancotirador.com/las-guerras-del-fin-del-mundo/'
-
     html = get(url)
     sopa = BeautifulSoup(html.text, 'html.parser')
+    listofContent = []
 
     chunks = sopa.find_all('p', style=True)
 
@@ -59,18 +60,26 @@ def getContent(url):
         if 'Compartir en Facebook' in content:
             continue
         else:
-            print(content)
+            listofContent.append(content)
 
+    return listofContent
 
 #here begins
 
 listOfArticles = getArticles(urlSeed)
 
-for article in range(len(listOfArticles)):
-    print('index : ' + str(article))
-    print(listOfArticles[article])
-    print('\n\n')
-
-index = int(input())
-
-getContent(listOfArticles[index]['link'])    
+for article in listOfArticles:
+    listofContent = getContent(article['link'])
+    allcontent = ''
+    for content in listofContent:
+        allcontent += content
+    directoryName = article['title']
+    if exists(directoryName):
+        print(directoryName)
+        continue
+    else:
+        mkdir(directoryName)
+        tts = gTTS(allcontent, lang='es-us')
+        tts.save(directoryName + '/' + directoryName + '.mp3')
+        print(directoryName)
+        print('sucess')
