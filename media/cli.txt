@@ -1,0 +1,1 @@
+ffmpeg -loop 1 -framerate 1 -i download.jpeg -i 'Por fin el mar.mp3' -c copy -shortest test.mp4
