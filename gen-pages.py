@@ -2,18 +2,20 @@
 
 # temporal imports
 from sys import executable
+from typing import Dict, List
 from requests import get, codes
+from bs4 import BeautifulSoup
 print(executable)
 # para generar las paginas
 
-def gen_pages(URL : str, word : str) ->  list:
+def gen_pages(URL : str, word : str) ->  List[str]:
     # instancen VARs
-    result : list = []
+    result = [] 
     count : int  = 0
     page : int = 1
     while True:
         tmp = URL + word + str(page)
-        print('comprovando : \t {}'.format(tmp))
+        print('comprobando : \t {}'.format(tmp))
         response = get(tmp)
         if response.status_code == codes.ok:
             print('{} \t found'.format(tmp))
@@ -29,4 +31,23 @@ def gen_pages(URL : str, word : str) ->  list:
     return result
 
 
-print(gen_pages(URL = 'http://www.elfrancotirador.com', word = '/page/'))
+# print(gen_pages(URL = 'http://www.elfrancotirador.com', word = '/page/'))
+
+# obtener las url de los cada pagina
+
+def get_urls(URL : str) -> List[Dict[str, str]] :
+    results = []
+    response = get(URL)
+    # hacer la sopa
+    if response.status_code == codes.ok:
+       sopa = BeautifulSoup(response.text, 'html.parser')
+    datos = sopa.find_all('a', href=True, title=True)
+    for data in datos:
+        article = {'title' : data['title'], 'link' : data['href']}
+        results.append(article)
+    return results
+
+URL = 'http://www.elfrancotirador.com'
+list_of_Urls = gen_pages(URL, word = '/page/')
+for item in list_of_Urls:
+    print(get_urls(item))
