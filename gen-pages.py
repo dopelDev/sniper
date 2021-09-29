@@ -2,9 +2,12 @@
 
 # temporal imports
 from sys import executable
+# imports
 from typing import Dict, List
 from requests import get, codes
 from bs4 import BeautifulSoup
+from alive_progress import alive_bar
+
 print(executable)
 # para generar las paginas
 
@@ -47,7 +50,32 @@ def get_urls(URL : str) -> List[Dict[str, str]] :
         results.append(article)
     return results
 
+def get_articules(title : str, Url : str):
+    pass
+
+# recibe una list conteniendo los titulos y url de cada pagina
+def clean_titles(articles : List[Dict[str,str]]):
+    for article in articles:
+        tmp = article.get('title')
+        tmp = tmp.replace('Enlace a ', '')
+        article.update([('title', tmp)])
+
 URL = 'http://www.elfrancotirador.com'
 list_of_Urls = gen_pages(URL, word = '/page/')
-for item in list_of_Urls:
-    print(get_urls(item))
+
+list_of_articles : List[Dict[str,str]] = []
+
+print('obteniendo articles')
+with alive_bar(len(list_of_Urls)) as bar :
+
+    for item in list_of_Urls:
+        list_of_articles.append(get_urls(item))
+        bar()
+print('Obtenidos sucess list_of_articles')
+print('limpiando titulos')
+with alive_bar(len(list_of_articles)) as bar :
+    for articles in list_of_articles:
+        clean_titles(articles)
+        bar()
+# print(list_of_articles[0][0].get('title'))
+print(list_of_articles)
