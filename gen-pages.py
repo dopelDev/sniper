@@ -60,22 +60,4 @@ def clean_titles(articles : List[Dict[str,str]]):
         tmp = tmp.replace('Enlace a ', '')
         article.update([('title', tmp)])
 
-URL = 'http://www.elfrancotirador.com'
-list_of_Urls = gen_pages(URL, word = '/page/')
 
-list_of_articles : List[Dict[str,str]] = []
-
-print('obteniendo articles')
-with alive_bar(len(list_of_Urls)) as bar :
-
-    for item in list_of_Urls:
-        list_of_articles.append(get_urls(item))
-        bar()
-print('Obtenidos sucess list_of_articles')
-print('limpiando titulos')
-with alive_bar(len(list_of_articles)) as bar :
-    for articles in list_of_articles:
-        clean_titles(articles)
-        bar()
-# print(list_of_articles[0][0].get('title'))
-print(list_of_articles)
